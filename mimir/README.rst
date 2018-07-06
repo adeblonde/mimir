@@ -1,4 +1,5 @@
-# Mimir
+Mimir
+---------
 
 Mimir is designed as a 'Machine-Learning agent' : it is a self-sufficient program that runs on a dedicated host, preferably a GPU machine or a Spark cluster master. 
 Mimir takes as input two kinds of Machine Learning calls : learning call (trying to fit a ML model on provided training data), or prediction call (proposing a prediction based on provided input and selected model).
