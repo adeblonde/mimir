@@ -1,0 +1,302 @@
+swagger: "2.0"
+info:
+  title: Mimir API
+  description: API for Machine-Learning Agent - Train/Run modes available, through direct API call 
+  version: '0.2'
+host: PROD_URL
+basePath: /v1
+schemes:
+  - https
+
+paths:
+  /models:
+    get:
+      operationId: getModels
+      summary: Get all metadata about models available
+      responses:
+        '200':
+          description: A json array with all the models' metadata
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/model_metadata'
+      produces:
+        - application/json
+    post:
+      operationId: addModel
+      summary: Add a new model
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model'
+      responses:
+        '200':
+          description: Successful model upload
+
+  /models/{modelId}:
+    get:
+      operationId: getModel
+      summary: Get a Model
+      parameters:
+        - name: modelId
+          in: path
+          description: ID of model to get
+          required: true
+          type: integer
+          format: int64
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: A json array with the model's properties and the model's string
+          schema:
+            $ref: '#/definitions/model'
+          
+    put:
+      operationId: updateModel
+      summary: Update model
+      parameters:
+        - name: modelId
+          in: path
+          description: ID of model to get
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model'
+      responses:
+        '405':
+          description: Invalid input
+
+  /data:
+    get:
+      operationId: getDataSet
+      summary: Get all metadata
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: A json array with all the datasets' metadata
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/dataset_metadata'
+    post:
+      operationId: addDataset
+      summary: Add a new dataset
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/dataset'                
+      responses:
+        '200':
+          description: Successful dataset upload
+
+    put:
+      operationId: updateDataset
+      summary: Update dataset
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/dataset'      
+      responses:
+        '405':
+          description: Invalid input
+
+  /configuration:
+    get:
+      operationId: getConfigurations
+      summary: Get metadata about all configurations
+      responses:
+        '200':
+          description: A json array with the model's properties and the model's string
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/configuration'
+
+    post:
+      operationId: addConfiguration
+      summary: Add a new configuration
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/configuration'
+      responses:
+        '200':
+          description: Successfully created new configuration
+
+  /configuration/{configurationId}:
+    get:
+      operationId: getConfiguration
+      summary: Get a Configuration
+      parameters:
+        - name: configurationId
+          in: path
+          description: ID of model to get
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: A json array with the configuration's properties and the configuration's string
+          schema:
+            $ref: '#/definitions/configuration'
+          
+    put:
+      operationId: updateConfiguration
+      summary: Update configuration
+      parameters:
+        - name: configurationId
+          in: path
+          description: ID of model to get
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/configuration'
+      responses:
+        '405':
+          description: Invalid input
+
+  /configuration/{configurationId}/train:
+    post:
+      operationId: trainConfiguration
+      summary: train a given configuration with the provided parameters
+      parameters:
+        - name: configurationId
+          in: path
+          description: ID of model to get
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/train'
+      responses:
+        '400':
+          description: Invalid result
+        '200':
+          description: A json object with details about the metrics reached during train
+          schema:
+            $ref: '#/definitions/train_results'
+
+  /configuration/{configurationId}/predict:
+    post:
+      operationId: predictConfiguration
+      summary: predict using a configuration with the provided inputs
+      parameters:
+        - name: configurationId
+          in: path
+          description: ID of model to get
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/predict_input'
+      responses:
+        '400':
+          description: Invalid result
+        '200':
+          description: A json object with details about the metrics reached during train
+          schema:
+            $ref: '#/definitions/predict_results'
+
+definitions:
+  model:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      content:
+        type: string
+  model_metadata:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+  dataset:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      content:
+        type: string
+  dataset_metadata:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+  configuration:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      dataset_id:
+        type: integer
+      model_id:
+        type: integer
+  train:
+    properties:
+      id:
+        type: integer
+      dataset_id:
+        type: integer
+      model_id:
+        type: integer
+  train_results:
+    properties:
+      id:
+        type: integer
+      dataset_id:
+        type: integer
+      model_id:
+        type: integer
+      metric:
+        type: string
+      metric_value:
+        type: string
+  predict_input:
+    properties:
+      id:
+        type: integer
+      dataset_id:
+        type: integer
+      model_id:
+        type: integer
+  predict_results:
+    properties:
+      id:
+        type: integer
+      dataset_id:
+        type: integer
+      model_id:
+        type: integer
+      metric:
+        type: string
+      metric_value:
+        type: string
